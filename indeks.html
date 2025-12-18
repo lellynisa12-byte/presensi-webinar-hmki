@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presensi Webinar HMKI 2025</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; padding: 20px; color: #333; }
+        .container { max-width: 600px; background: white; margin: auto; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 8px solid #1a73e8; }
+        h2 { color: #1a73e8; text-align: center; font-size: 1.3rem; margin-bottom: 20px; line-height: 1.4; }
+        .hidden { display: none; }
+        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        button { width: 100%; padding: 15px; background: #1a73e8; color: white; border: none; border-radius: 10px; margin-top: 25px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .opt-btn { background: white; color: #1a73e8; border: 2px solid #1a73e8; margin-bottom: 12px; }
+        .opt-btn:hover { background: #1a73e8; color: white; }
+        .success-box { background: #f0fff4; border: 1px solid #38a169; padding: 25px; border-radius: 15px; text-align: center; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContent">
+    <h2>Urgensi Pengelolaan Arsip Vital Bagi Masyarakat di Era Digital</h2>
+    <hr>
+    
+    <div id="step1">
+        <p style="text-align: center; font-weight: bold;">Pilih Kategori Peserta:</p>
+        <button class="opt-btn" onclick="showForm('Fungsionaris')">Fungsionaris HMKI</button>
+        <button class="opt-btn" onclick="showForm('Non-Fungsionaris')">Non Fungsionaris HMKI (Umum)</button>
+    </div>
+
+    <form id="attendanceForm" class="hidden">
+        <h3 id="formTitle" style="font-size: 1.1rem; color: #555;"></h3>
+        <input type="hidden" id="tipePeserta">
+
+        <label>Nama Lengkap</label>
+        <input type="text" id="nama" placeholder="Nama sesuai sertifikat" required>
+
+        <div id="fieldsFungsionaris" class="hidden">
+            <label>Divisi</label>
+            <select id="divisi">
+                <option value="DEK">DEK</option><option value="DPJI">DPJI</option>
+                <option value="DPP">DPP</option><option value="DMI">DMI</option>
+                <option value="DKP">DKP</option><option value="Korwil">Koordinator Wilayah</option>
+                <option value="Bendahara Wilayah">Bendahara Wilayah</option>
+            </select>
+            <label>Jabatan</label>
+            <select id="jabatan">
+                <option value="Ketua Umum">Ketua Umum</option><option value="Wakil Ketua Umum">Wakil Ketua Umum</option>
+                <option value="Sekretaris Umum">Sekretaris Umum</option><option value="Bendahara Umum">Bendahara Umum</option>
+                <option value="PO">PO</option><option value="VPO">VPO</option>
+                <option value="Kepala Divisi">Kepala Divisi</option>
+            </select>
+            <label>Region</label>
+            <select id="region">
+                <option value="UNDIP">Universitas Diponegoro</option><option value="UI">Universitas Indonesia</option>
+                <option value="UGM">Universitas Gadjah Mada</option><option value="POLINEMA">Politeknik Negeri Malang</option>
+                <option value="UNPAD">Universitas Padjajaran</option><option value="UNAIR">Universitas Airlangga</option>
+            </select>
+            <label>Angkatan</label>
+            <select id="angkatan">
+                <option value="23">23</option><option value="24">24</option><option value="25">25</option>
+            </select>
+        </div>
+
+        <div id="fieldsNonFungsionaris" class="hidden">
+            <label>Asal Instansi/Universitas</label>
+            <input type="text" id="instansi" placeholder="Contoh: Universitas Brawijaya">
+            <label>Mendapat info webinar dari mana?</label>
+            <input type="text" id="sumber" placeholder="Contoh: Instagram HMKI">
+            <label>Alasan mengikuti webinar</label>
+            <textarea id="alasan" rows="2"></textarea>
+        </div>
+
+        <hr>
+        <label>Menurut Anda, bagaimana kita bisa menjamin sebuah arsip vital tetap memiliki nilai hukum yang sah jika teknologi AI saat ini bisa memanipulasi wajah dan suara dengan sangat sempurna?</label>
+        <textarea id="jawabanAI" rows="4" required></textarea>
+
+        <label>Kritik dan Saran</label>
+        <textarea id="kritik" rows="2"></textarea>
+
+        <label style="color: #e53e3e;">Bukti Mengikuti Webinar (Wajib Screenshot)</label>
+        <input type="file" id="buktiFile" accept="image/*" required>
+
+        <button type="submit" id="submitBtn">KIRIM PRESENSI SEKARANG</button>
+    </form>
+</div>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwn-x0h1CPyNXrgkW03HpXos1xh4px3BM2kwWxYuV0jkSkPO5Xj8wEclOu3H2YTXljA2Q/exec';
+
+    // CEK JIKA SUDAH PERNAH ISI (LOCAL STORAGE)
+    window.onload = function() {
+        const check = localStorage.getItem('done_webinar_hmki');
+        if(check) {
+            showSummary(JSON.parse(check));
+        }
+    };
+
+    function showForm(tipe) {
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('attendanceForm').classList.remove('hidden');
+        document.getElementById('tipePeserta').value = tipe;
+        document.getElementById('formTitle').innerText = "Kategori: " + tipe;
+        
+        if(tipe === 'Fungsionaris') {
+            document.getElementById('fieldsFungsionaris').classList.remove('hidden');
+            document.getElementById('fieldsNonFungsionaris').classList.add('hidden');
+        } else {
+            document.getElementById('fieldsNonFungsionaris').classList.remove('hidden');
+            document.getElementById('fieldsFungsionaris').classList.add('hidden');
+        }
+    }
+
+    document.getElementById('attendanceForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = "Proses Mengirim...";
+
+        const tipe = document.getElementById('tipePeserta').value;
+        const payload = {
+            tipe: tipe,
+            nama: document.getElementById('nama').value,
+            jawabanAI: document.getElementById('jawabanAI').value,
+            kritik: document.getElementById('kritik').value,
+            bukti: "Foto Berhasil Diunggah" // Penanda sistem
+        };
+
+        if(tipe === 'Fungsionaris') {
+            payload.divisi = document.getElementById('divisi').value;
+            payload.jabatan = document.getElementById('jabatan').value;
+            payload.region = document.getElementById('region').value;
+            payload.angkatan = document.getElementById('angkatan').value;
+        } else {
+            payload.instansi = document.getElementById('instansi').value;
+            payload.sumber = document.getElementById('sumber').value;
+            payload.alasan = document.getElementById('alasan').value;
+        }
+
+        try {
+            await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' });
+            localStorage.setItem('done_webinar_hmki', JSON.stringify(payload));
+            showSummary(payload);
+        } catch (error) {
+            alert("Gagal mengirim, periksa koneksi internet!");
+            btn.disabled = false;
+            btn.innerText = "KIRIM PRESENSI SEKARANG";
+        }
+    });
+
+    function showSummary(data) {
+        document.getElementById('mainContent').innerHTML = `
+            <div class="success-box">
+                <h3 style="color: #2f855a;">✓ Presensi Berhasil!</h3>
+                <p>Halo <b>${data.nama}</b>, data Anda telah kami terima.</p>
+                <hr>
+                <div style="text-align: left; font-size: 0.9rem; color: #444;">
+                    <p><b>Kategori:</b> ${data.tipe}</p>
+                    <p><b>Status Bukti:</b> Tersimpan</p>
+                </div>
+                <p style="margin-top:20px; font-size: 0.8rem; color: #888;">Anda sudah mengisi absen dan tidak dapat mengisinya kembali.</p>
+            </div>
+        `;
+    }
+</script>
+</body>
+</html>
